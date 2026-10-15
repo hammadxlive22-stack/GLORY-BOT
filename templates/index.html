@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAZHINI BOT — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-0: #05070d;
+  --bg-1: #0a0e1a;
+  --bg-2: #101523;
+  --bg-3: #161d2e;
+  --border: #1e2842;
+  --border-hi: #2d3b5c;
+  --accent: #00e5ff;
+  --accent-2: #ff2e88;
+  --accent-3: #a855f7;
+  --green: #00ff88;
+  --yellow: #ffcc00;
+  --red: #ff3b3b;
+  --text: #e6edf7;
+  --text-dim: #8892a8;
+  --text-mute: #4d5773;
+  --shadow-glow: 0 0 20px rgba(0,229,255,0.35);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg-0);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at top left, rgba(0,229,255,0.08), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(168,85,247,0.08), transparent 50%),
+    radial-gradient(ellipse at center, rgba(255,46,136,0.04), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(30,40,66,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,40,66,0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+
+/* ═══════════ HEADER ═══════════ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(16,21,35,0.95), rgba(10,14,26,0.85));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-3));
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  box-shadow: var(--shadow-glow);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(0,229,255,0.35); }
+  50%      { box-shadow: 0 0 30px rgba(0,229,255,0.65); }
+}
+
+.logo-text h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-text p {
+  font-size: 12px;
+  color: var(--text-mute);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: rgba(0,255,136,0.08);
+  border: 1px solid rgba(0,255,136,0.3);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+/* ═══════════ STATS GRID ═══════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  padding: 20px;
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-1));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--border-hi);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.6;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-value.accent { color: var(--accent); }
+.stat-value.green  { color: var(--green); }
+.stat-value.yellow { color: var(--yellow); }
+.stat-value.pink   { color: var(--accent-2); }
+
+/* ═══════════ TABS ═══════════ */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.tabs::-webkit-scrollbar { height: 4px; }
+.tabs::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
+
+.tab {
+  padding: 10px 22px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text);
+  border-color: var(--border-hi);
+}
+
+.tab.active {
+  background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(168,85,247,0.15));
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 12px rgba(0,229,255,0.25);
+}
+
+/* ═══════════ PANELS ═══════════ */
+.panel {
+  background: linear-gradient(135deg, rgba(16,21,35,0.9), rgba(10,14,26,0.7));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+}
+
+.panel-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+}
+
+.panel-title::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  border-radius: 2px;
+}
+
+/* ═══════════ FORMS ═══════════ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 11px;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+.field input, .field select {
+  background: var(--bg-0);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.field input:focus, .field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.12);
+}
+
+/* ═══════════ BUTTONS ═══════════ */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #0093b3);
+  color: var(--bg-0);
+  box-shadow: 0 4px 14px rgba(0,229,255,0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,229,255,0.5);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--red), #b91c1c);
+  color: white;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255,59,59,0.4);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-hi);
+  color: var(--text-dim);
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+
+/* ═══════════ ACCOUNT CARDS ═══════════ */
+.accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.account-card {
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-1));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.account-card:hover {
+  border-color: var(--border-hi);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+}
+
+.account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 10px;
+}
+
+.account-name {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: 0.5px;
+  word-break: break-all;
+}
+
+.account-uid {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-mute);
+  margin-top: 4px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge-online  { background: rgba(0,255,136,0.15); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+.badge-offline { background: rgba(136,146,168,0.15); color: var(--text-dim); border: 1px solid var(--border); }
+.badge-match   { background: rgba(0,229,255,0.15); color: var(--accent); border: 1px solid rgba(0,229,255,0.3); }
+.badge-error   { background: rgba(255,59,59,0.15); color: var(--red); border: 1px solid rgba(255,59,59,0.3); }
+.badge-team    { background: rgba(168,85,247,0.15); color: var(--accent-3); border: 1px solid rgba(168,85,247,0.3); }
+.badge-connect { background: rgba(255,204,0,0.15); color: var(--yellow); border: 1px solid rgba(255,204,0,0.3); }
+
+.account-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.mini-stat {
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.mini-stat-label {
+  font-size: 9px;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.mini-stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--accent);
+}
+
+.account-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ═══════════ LOG PANEL ═══════════ */
+.log-panel {
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.log-panel::-webkit-scrollbar { width: 6px; }
+.log-panel::-webkit-scrollbar-track { background: var(--bg-1); }
+.log-panel::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 4px; }
+
+.log-entry {
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(30,40,66,0.4);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.log-time {
+  color: var(--text-mute);
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+.log-msg { word-break: break-word; flex: 1; }
+.log-success { color: var(--green); }
+.log-error   { color: var(--red); }
+.log-warning { color: var(--yellow); }
+.log-info    { color: var(--accent); }
+
+/* ═══════════ EMPTY ═══════════ */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-mute);
+}
+
+.empty-state-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+
+.empty-state h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.empty-state p { font-size: 13px; }
+
+/* ═══════════ TOAST ═══════════ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 14px 22px;
+  background: linear-gradient(135deg, var(--bg-3), var(--bg-2));
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  box-shadow: 0 12px 32px rgba(0,229,255,0.3);
+  transform: translateY(120%);
+  transition: transform 0.3s ease;
+  z-index: 999;
+  max-width: 340px;
+}
+
+.toast.show { transform: translateY(0); }
+.toast.error { border-color: var(--red); box-shadow: 0 12px 32px rgba(255,59,59,0.3); }
+.toast.success { border-color: var(--green); box-shadow: 0 12px 32px rgba(0,255,136,0.3); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 640px) {
+  .container { padding: 16px 12px 60px; }
+  .header { padding: 16px; }
+  .logo-text h1 { font-size: 18px; }
+  .stat-value { font-size: 22px; }
+  .accounts-grid { grid-template-columns: 1fr; }
+  .panel { padding: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">
+        <h1>TAZHINI BOT</h1>
+        <p>Free Fire Squad Automation</p>
+      </div>
+    </div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      <span id="server-status">SYSTEM ONLINE</span>
+    </div>
+  </header>
+
+  <!-- ═══ STATS ═══ -->
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Accounts</div>
+      <div class="stat-value accent" id="stat-total">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Online Now</div>
+      <div class="stat-value green" id="stat-online">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">In Match</div>
+      <div class="stat-value yellow" id="stat-match">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Matches</div>
+      <div class="stat-value pink" id="stat-matches">0</div>
+    </div>
+  </section>
+
+  <!-- ═══ TABS ═══ -->
+  <div class="tabs">
+    <button class="tab active" data-tab="accounts">👥 Accounts</button>
+    <button class="tab" data-tab="add">➕ Add Account</button>
+    <button class="tab" data-tab="logs">📜 Live Logs</button>
+  </div>
+
+  <!-- ═══ ACCOUNTS TAB ═══ -->
+  <div class="tab-content" id="tab-accounts">
+    <div class="panel">
+      <div class="panel-title">Active Accounts</div>
+      <div class="accounts-grid" id="accounts-grid">
+        <div class="empty-state">
+          <div class="empty-state-icon">👤</div>
+          <h3>No Accounts</h3>
+          <p>Add an account using the "Add Account" tab</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ADD ACCOUNT TAB ═══ -->
+  <div class="tab-content" id="tab-add" style="display:none">
+    <div class="panel">
+      <div class="panel-title">Add New Account</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Login Type</label>
+          <select id="login-type">
+            <option value="guest">Guest (UID + Password)</option>
+            <option value="token">Access Token</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="guest-fields">
+        <div class="form-grid">
+          <div class="field">
+            <label>UID</label>
+            <input type="text" id="input-uid" placeholder="Enter UID">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input type="password" id="input-password" placeholder="Enter Password">
+          </div>
+        </div>
+      </div>
+
+      <div id="token-fields" style="display:none">
+        <div class="form-grid">
+          <div class="field">
+            <label>Access Token</label>
+            <input type="text" id="input-token" placeholder="Enter Access Token">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="addAccount()">➕ Add & Start</button>
+    </div>
+  </div>
+
+  <!-- ═══ LOGS TAB ═══ -->
+  <div class="tab-content" id="tab-logs" style="display:none">
+    <div class="panel">
+      <div class="panel-title">
+        Live Logs
+        <button class="btn btn-ghost btn-sm" onclick="clearLogs()" style="margin-left:auto">Clear</button>
+      </div>
+      <div class="log-panel" id="log-panel">
+        <div class="log-entry">
+          <span class="log-time">--:--:--</span>
+          <span class="log-msg log-info">Waiting for logs...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════ STATE ═══════════
+let accounts = [];
+let logs = [];
+let isRefreshing = false;
+
+// ═══════════ TOAST ═══════════
+function showToast(msg, type = "info") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  setTimeout(() => t.className = "toast " + type, 3000);
+}
+
+// ═══════════ TABS ═══════════
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(c => c.style.display = "none");
+    tab.classList.add("active");
+    document.getElementById("tab-" + tab.dataset.tab).style.display = "block";
+  });
+});
+
+// ═══════════ LOGIN TYPE TOGGLE ═══════════
+document.getElementById("login-type").addEventListener("change", (e) => {
+  const v = e.target.value;
+  document.getElementById("guest-fields").style.display = v === "guest" ? "block" : "none";
+  document.getElementById("token-fields").style.display = v === "token" ? "block" : "none";
+});
+
+// ═══════════ API CALLS ═══════════
+async function fetchAccounts() {
+  try {
+    const r = await fetch("/api/accounts");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    accounts = d.accounts || [];
+    renderAccounts();
+    updateStats();
+  } catch (e) {
+    console.error("fetchAccounts:", e);
+  }
+}
+
+async function fetchLogs() {
+  try {
+    const r = await fetch("/api/logs");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    logs = d.logs || [];
+    renderLogs();
+  } catch (e) {
+    console.error("fetchLogs:", e);
+  }
+}
+
+async function addAccount() {
+  const type = document.getElementById("login-type").value;
+  const body = {};
+
+  if (type === "guest") {
+    const uid = document.getElementById("input-uid").value.trim();
+    const pw  = document.getElementById("input-password").value.trim();
+    if (!uid || !pw) { showToast("Enter UID and Password", "error"); return; }
+    body.uid = uid;
+    body.password = pw;
+  } else {
+    const tk = document.getElementById("input-token").value.trim();
+    if (!tk) { showToast("Enter Access Token", "error"); return; }
+    body.token = tk;
+  }
+
+  try {
+    const r = await fetch("/api/add_account", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (r.ok && d.success !== false) {
+      showToast("✅ Account added!", "success");
+      document.getElementById("input-uid").value = "";
+      document.getElementById("input-password").value = "";
+      document.getElementById("input-token").value = "";
+      setTimeout(fetchAccounts, 800);
+    } else {
+      showToast("❌ " + (d.error || "Failed"), "error");
+    }
+  } catch (e) {
+    showToast("❌ Network error", "error");
+  }
+}
+
+async function removeAccount(uid) {
+  if (!confirm("Remove account " + uid + "?")) return;
+  try {
+    const r = await fetch("/api/remove_account", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uid })
+    });
+    if (r.ok) {
+      showToast("Account removed", "success");
+      fetchAccounts();
+    }
+  } catch (e) {
+    showToast("Failed to remove", "error");
+  }
+}
+
+async function refreshAccount(uid) {
+  try {
+    await fetch("/api/refresh_account", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uid })
+    });
+    showToast("Refreshing " + uid, "success");
+  } catch (e) {
+    showToast("Refresh failed", "error");
+  }
+}
+
+// ═══════════ RENDER ═══════════
+function getStatusClass(status) {
+  if (!status) return "badge-offline";
+  const s = String(status).toUpperCase();
+  if (s.includes("IN_MATCH") || s.includes("MATCH")) return "badge-match";
+  if (s.includes("IN_TEAM") || s.includes("TEAM") || s.includes("JOINING")) return "badge-team";
+  if (s.includes("ONLINE")) return "badge-online";
+  if (s.includes("ERROR") || s.includes("FAIL")) return "badge-error";
+  if (s.includes("CONNECT")) return "badge-connect";
+  return "badge-offline";
+}
+
+function renderAccounts() {
+  const grid = document.getElementById("accounts-grid");
+  if (!accounts.length) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-state-icon">👤</div>
+        <h3>No Accounts</h3>
+        <p>Add an account using the "Add Account" tab</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = accounts.map(a => {
+    const uid = a.uid || a.account_id || "?";
+    const nick = a.nickname || "Player";
+    const region = a.region || "ID";
+    const level = a.level || 0;
+    const exp = a.exp || 0;
+    const likes = a.likes || 0;
+    const status = a.status || "OFFLINE";
+    const matches = a.matches || 0;
+    const statusClass = getStatusClass(status);
+
+    return `
+      <div class="account-card">
+        <div class="account-header">
+          <div>
+            <div class="account-name">${escapeHtml(nick)}</div>
+            <div class="account-uid">UID: ${escapeHtml(String(uid))}</div>
+          </div>
+          <span class="badge ${statusClass}">${escapeHtml(status)}</span>
+        </div>
+        <div class="account-stats">
+          <div class="mini-stat">
+            <div class="mini-stat-label">Level</div>
+            <div class="mini-stat-value">${level}</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-label">Region</div>
+            <div class="mini-stat-value">${escapeHtml(region)}</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-label">Matches</div>
+            <div class="mini-stat-value">${matches}</div>
+          </div>
+        </div>
+        <div class="account-actions">
+          <button class="btn btn-ghost btn-sm" onclick="refreshAccount('${escapeHtml(String(uid))}')">🔄 Refresh</button>
+          <button class="btn btn-danger btn-sm" onclick="removeAccount('${escapeHtml(String(uid))}')">✕ Remove</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderLogs() {
+  const panel = document.getElementById("log-panel");
+  if (!logs.length) {
+    panel.innerHTML = `<div class="log-entry"><span class="log-time">--:--:--</span><span class="log-msg log-info">No logs yet</span></div>`;
+    return;
+  }
+  panel.innerHTML = logs.slice(-200).map(l => {
+    const t = l.time || "--:--:--";
+    const msg = l.msg || l.message || "";
+    const lvl = l.level || "info";
+    return `<div class="log-entry">
+      <span class="log-time">${escapeHtml(t)}</span>
+      <span class="log-msg log-${escapeHtml(lvl)}">${escapeHtml(msg)}</span>
+    </div>`;
+  }).join("");
+  panel.scrollTop = panel.scrollHeight;
+}
+
+function clearLogs() {
+  logs = [];
+  renderLogs();
+  showToast("Logs cleared", "success");
+}
+
+function updateStats() {
+  document.getElementById("stat-total").textContent = accounts.length;
+  let online = 0, inMatch = 0, totalMatches = 0;
+  accounts.forEach(a => {
+    const s = String(a.status || "").toUpperCase();
+    if (s.includes("ONLINE") || s.includes("MATCH") || s.includes("TEAM") || s.includes("JOINING")) online++;
+    if (s.includes("MATCH")) inMatch++;
+    totalMatches += (a.matches || 0);
+  });
+  document.getElementById("stat-online").textContent = online;
+  document.getElementById("stat-match").textContent = inMatch;
+  document.getElementById("stat-matches").textContent = totalMatches;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+// ═══════════ AUTO REFRESH ═══════════
+async function refreshAll() {
+  if (isRefreshing) return;
+  isRefreshing = true;
+  await Promise.all([fetchAccounts(), fetchLogs()]);
+  isRefreshing = false;
+}
+
+refreshAll();
+setInterval(refreshAll, 3000);
+</script>
+
+</body>
+</html>
